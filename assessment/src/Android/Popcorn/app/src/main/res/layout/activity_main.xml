@@ -5,8 +5,8 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.MainActivity">
 
 
     <android.support.v7.widget.Toolbar
@@ -25,7 +25,7 @@
         android:id="@+id/movieListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="19dp"
+        android:layout_marginTop="28dp"
         android:background="#E6E6E6"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,13 +37,13 @@
         android:id="@+id/btnRefetch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Refetch data"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"
-        android:text="Refetch data" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
         android:id="@+id/progressBar"

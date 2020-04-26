@@ -1,12 +1,16 @@
 package com.alvloureiro.popcorn.ui
 
-import android.annotation.TargetApi
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
+import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.SearchView
+import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.Toast
 import com.alvloureiro.popcorn.R
 import com.alvloureiro.popcorn.data.valueobjects.*
@@ -26,7 +30,6 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     companion object {
-        const val TAG = "MainActivity"
         const val UPCOMING_MOVIES = "UPCOMING_MOVIES"
         const val MOVIE_MODEL = "MODEL"
         const val IS_GENRES_FETCHED = "IS_GENRES_FETCHED"
@@ -70,10 +73,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //setSupportActionBar(findViewById(R.id.apptoolbar))
         setSupportActionBar(toolbar)
         supportActionBar?.title = getString(R.string.app_name)
-
 
         component.inject(this)
 
@@ -203,7 +204,35 @@ class MainActivity : AppCompatActivity() {
                         getString(R.string.label_toast_did_fetch_movies_fail_text),
                         Toast.LENGTH_LONG
                 ).show()
-            } else -> {}
+            }
+            APP_DID_FETCH_SEARCH_SUCCESS -> {
+                progressBar?.hide()
+                state.payload?.let {
+                    val searchResult = it as Result;
+                    if (searchResult.results?.isNotEmpty()!!) {
+                        mUpcomingMovies = null
+                        mUpcomingMovies = searchResult
+                        mMovieAdapter.setMovies(ArrayList())
+                        mMaxPages = mUpcomingMovies?.total_pages as Int
+
+                        mMovieAdapter.addMovies(mUpcomingMovies?.results as ArrayList<Movie>)
+                        if (!mLoadingScrolling) {
+                            mLoadingScrolling = true
+                        }
+                    }
+
+                }
+            }
+            APP_DID_FETCH_SEARCH_FAIL -> {
+                progressBar?.hide()
+                btnRefetch?.show()
+                Toast.makeText(
+                        this,
+                        getString(R.string.label_toast_did_fetch_movies_fail_text),
+                        Toast.LENGTH_LONG
+                ).show()
+            }
+            else -> {}
         }
     }
 
@@ -233,6 +262,40 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.appmenu, menu)
+
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                progressBar.show()
+                mViewModel.search(query, 1)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return true
+            }
+        })
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.action_search -> {
+            // User chose the "Settings" item, show the app settings UI...
+            true
+        }
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
         }
     }
 }

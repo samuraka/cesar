@@ -29,11 +29,12 @@ class MovieListViewAdapter
             moviePoster.loadPosterFromUrl(url = item?.poster_path)
 
             movieName.text = context?.getString(R.string.movie_title_name_text, item?.title)
-
-            movieReleaseDate.text = context?.getString(
-                    R.string.movie_release_date_text,
-                    item?.release_date?.toDisplayDate()
-            )
+            if (item?.release_date?.isNotEmpty()!!) {
+                movieReleaseDate.text = context?.getString(
+                        R.string.movie_release_date_text,
+                        item?.release_date?.toDisplayDate()
+                )
+            }
 
             ratingBar.rating = item?.vote_average?.convertVoteAverageToRating()!!
 
